@@ -24,7 +24,7 @@ jobs:
 
       - name: Build executable
         run: |
-          go build -o build/reggen github.com/liteldev/reggen
+          go build -ldflags "-s -w" -o build/reggen github.com/liteldev/reggen
 
       - name: Upload build
         uses: actions/upload-artifact@v3
