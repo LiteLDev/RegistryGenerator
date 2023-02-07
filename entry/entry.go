@@ -9,11 +9,12 @@ import (
 
 type Entry struct {
 	ToothPath   string
-	Name        string
-	Description string
 	Author      string
-	License     string
+	Description string
 	Homepage    string
+	License     string
+	Name        string
+	Repository  string
 }
 
 const entryJSONSchema = `
@@ -37,27 +38,37 @@ const entryJSONSchema = `
             "type": "object",
             "additionalProperties": false,
             "required": [
-                "name",
-                "description",
                 "author",
+                "description",
+                "homepage",
                 "license",
-                "homepage"
+                "name",
+                "repository"
             ],
             "properties": {
-                "name": {
-                    "type": "string"
+                "author": {
+                    "type": "string",
+                    "pattern": "^[a-zA-Z0-9-]+$"
                 },
                 "description": {
-                    "type": "string"
-                },
-                "author": {
-                    "type": "string"
-                },
-                "license": {
-                    "type": "string"
+                    "type": "string",
+                    "minLength": 1
                 },
                 "homepage": {
-                    "type": "string"
+                    "type": "string",
+                    "pattern": "^https?:\/\/.+$"
+                },
+                "license": {
+                    "type": "string",
+                    "pattern": "^[a-zA-Z0-9-+.]*$"
+                },
+                "name": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "repository": {
+                    "type": "string",
+                    "pattern": "^github\\.com\/[a-zA-Z0-9-]+\/[a-zA-Z0-9-_.]+$"
                 }
             }
         }
@@ -97,20 +108,23 @@ func NewFromJSON(jsonBytes []byte) (*Entry, error) {
 	entry.ToothPath = jsonMap["tooth"].(string)
 	if information, ok := jsonMap["information"]; ok {
 		informationMap := information.(map[string]interface{})
-		if name, ok := informationMap["name"]; ok {
-			entry.Name = name.(string)
+		if author, ok := informationMap["author"]; ok {
+			entry.Author = author.(string)
 		}
 		if description, ok := informationMap["description"]; ok {
 			entry.Description = description.(string)
 		}
-		if author, ok := informationMap["author"]; ok {
-			entry.Author = author.(string)
+		if homepage, ok := informationMap["homepage"]; ok {
+			entry.Homepage = homepage.(string)
 		}
 		if license, ok := informationMap["license"]; ok {
 			entry.License = license.(string)
 		}
-		if homepage, ok := informationMap["homepage"]; ok {
-			entry.Homepage = homepage.(string)
+		if name, ok := informationMap["name"]; ok {
+			entry.Name = name.(string)
+		}
+		if repository, ok := informationMap["repository"]; ok {
+			entry.Repository = repository.(string)
 		}
 	}
 

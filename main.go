@@ -118,7 +118,7 @@ func loadEntry(input, name string) (*entryutils.Entry, error) {
 	// Create entry.
 	entry, err := entryutils.NewFromJSON(jsonBytes)
 	if err != nil {
-		return nil, errors.New("failed to create entry: " + err.Error())
+		return nil, errors.New("failed to create entry with " + name + ": " + err.Error())
 	}
 
 	return entry, nil
@@ -148,11 +148,12 @@ func generateIndex(output string, entryMap map[string]*entryutils.Entry) error {
 	for identifier, entry := range entryMap {
 		entryObject := make(map[string]interface{})
 		entryObject["tooth"] = entry.ToothPath
-		entryObject["name"] = entry.Name
-		entryObject["description"] = entry.Description
 		entryObject["author"] = entry.Author
-		entryObject["license"] = entry.License
+		entryObject["description"] = entry.Description
 		entryObject["homepage"] = entry.Homepage
+		entryObject["license"] = entry.License
+		entryObject["name"] = entry.Name
+		entryObject["repository"] = entry.Repository
 
 		outputObject["index"].(map[string]interface{})[identifier] = entryObject
 	}
