@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	entryutils "github.com/liteldev/reggen/entry"
+	"github.com/liteldev/reggen/entries"
 	"github.com/liteldev/reggen/logger"
 )
 
@@ -63,7 +63,7 @@ func main() {
 }
 
 // loadEntries loads entries from input directory.
-func loadEntries(input string) (map[string]*entryutils.Entry, error) {
+func loadEntries(input string) (map[string]*entries.Entry, error) {
 	// Open input directory.
 	dir, err := os.Open(input)
 	if err != nil {
@@ -78,7 +78,7 @@ func loadEntries(input string) (map[string]*entryutils.Entry, error) {
 	}
 
 	// Load entries.
-	entryMap := make(map[string]*entryutils.Entry)
+	entryMap := make(map[string]*entries.Entry)
 	for _, name := range names {
 		// File name must end with ".json" extension.
 		if filepath.Ext(name) != ".json" {
@@ -99,7 +99,7 @@ func loadEntries(input string) (map[string]*entryutils.Entry, error) {
 }
 
 // loadEntry loads entry from input directory.
-func loadEntry(input, name string) (*entryutils.Entry, error) {
+func loadEntry(input, name string) (*entries.Entry, error) {
 	var err error
 
 	// Open entry file.
@@ -116,7 +116,7 @@ func loadEntry(input, name string) (*entryutils.Entry, error) {
 	}
 
 	// Create entry.
-	entry, err := entryutils.NewFromJSON(jsonBytes)
+	entry, err := entries.NewFromJSON(jsonBytes)
 	if err != nil {
 		return nil, errors.New("failed to create entry with " + name + ": " + err.Error())
 	}
@@ -125,7 +125,7 @@ func loadEntry(input, name string) (*entryutils.Entry, error) {
 }
 
 // generateIndex generates index file.
-func generateIndex(output string, entryMap map[string]*entryutils.Entry) error {
+func generateIndex(output string, entryMap map[string]*entries.Entry) error {
 	var err error
 
 	// Create output directory.
