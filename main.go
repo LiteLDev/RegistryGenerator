@@ -154,6 +154,7 @@ func generateIndex(output string, entryMap map[string]*entries.Entry) error {
 		entryObject["license"] = entry.License
 		entryObject["name"] = entry.Name
 		entryObject["repository"] = entry.Repository
+		entryObject["tags"] = entry.Tags
 
 		outputObject["index"].(map[string]interface{})[identifier] = entryObject
 	}

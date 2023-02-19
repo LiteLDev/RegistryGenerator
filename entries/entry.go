@@ -15,6 +15,7 @@ type Entry struct {
 	License     string
 	Name        string
 	Repository  string
+	Tags        []string
 }
 
 const entryJSONSchema = `
@@ -40,10 +41,7 @@ const entryJSONSchema = `
             "required": [
                 "author",
                 "description",
-                "homepage",
-                "license",
-                "name",
-                "repository"
+                "name"
             ],
             "properties": {
                 "author": {
@@ -69,6 +67,13 @@ const entryJSONSchema = `
                 "repository": {
                     "type": "string",
                     "pattern": "^github\\.com\/[a-zA-Z0-9-]+\/[a-zA-Z0-9-_.]+$"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "pattern": "^[a-z0-9-]+$"
+                    }
                 }
             }
         }
@@ -108,23 +113,29 @@ func NewFromJSON(jsonBytes []byte) (*Entry, error) {
 	entry.ToothPath = jsonMap["tooth"].(string)
 	if information, ok := jsonMap["information"]; ok {
 		informationMap := information.(map[string]interface{})
-		if author, ok := informationMap["author"]; ok {
-			entry.Author = author.(string)
-		}
-		if description, ok := informationMap["description"]; ok {
-			entry.Description = description.(string)
-		}
+
+		entry.Author = informationMap["author"].(string)
+		entry.Description = informationMap["description"].(string)
+		entry.Name = informationMap["name"].(string)
+
 		if homepage, ok := informationMap["homepage"]; ok {
 			entry.Homepage = homepage.(string)
 		}
+
 		if license, ok := informationMap["license"]; ok {
 			entry.License = license.(string)
 		}
-		if name, ok := informationMap["name"]; ok {
-			entry.Name = name.(string)
-		}
+
 		if repository, ok := informationMap["repository"]; ok {
 			entry.Repository = repository.(string)
+		}
+
+		if tags, ok := informationMap["tags"]; ok {
+			for _, tag := range tags.([]interface{}) {
+				entry.Tags = append(entry.Tags, tag.(string))
+			}
+		} else {
+			entry.Tags = []string{}
 		}
 	}
 
