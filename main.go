@@ -8,8 +8,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/liteldev/reggen/entries"
-	"github.com/liteldev/reggen/logger"
+	"github.com/liteldev/registrygenerator/entries"
+	"github.com/liteldev/registrygenerator/logger"
 )
 
 const helpMessage = `
@@ -18,7 +18,7 @@ Usage:
   
 Options:
   --h, -help                  Show help.
-  --input <path>              Input directory. (default: teeth)
+  --input <path>              Input directory. (default: entries)
   --output <path>             Output file. (default: index.json)`
 
 func main() {
@@ -27,7 +27,7 @@ func main() {
 	flagSet.Usage = func() {
 		logger.Info(helpMessage)
 	}
-	input := flagSet.String("input", "teeth", "Input directory.")
+	input := flagSet.String("input", "entries", "Input directory.")
 	output := flagSet.String("output", "index.json", "Output file.")
 	flagSet.Parse(os.Args[1:])
 
@@ -63,7 +63,7 @@ func main() {
 }
 
 // loadEntries loads entries from input directory.
-func loadEntries(input string) (map[string]*entries.Entry, error) {
+func loadEntries(input string) (map[string]entries.IEntry, error) {
 	// Open input directory.
 	dir, err := os.Open(input)
 	if err != nil {
@@ -78,11 +78,11 @@ func loadEntries(input string) (map[string]*entries.Entry, error) {
 	}
 
 	// Load entries.
-	entryMap := make(map[string]*entries.Entry)
+	entryMap := make(map[string]entries.IEntry)
 	for _, name := range names {
 		// File name must end with ".json" extension.
 		if filepath.Ext(name) != ".json" {
-			return nil, errors.New("invalid file name: " + name)
+			continue
 		}
 
 		// Load entry.
@@ -99,7 +99,7 @@ func loadEntries(input string) (map[string]*entries.Entry, error) {
 }
 
 // loadEntry loads entry from input directory.
-func loadEntry(input, name string) (*entries.Entry, error) {
+func loadEntry(input, name string) (entries.IEntry, error) {
 	var err error
 
 	// Open entry file.
@@ -125,7 +125,7 @@ func loadEntry(input, name string) (*entries.Entry, error) {
 }
 
 // generateIndex generates index file.
-func generateIndex(output string, entryMap map[string]*entries.Entry) error {
+func generateIndex(output string, entryMap map[string]entries.IEntry) error {
 	var err error
 
 	// Create output directory.
@@ -146,17 +146,7 @@ func generateIndex(output string, entryMap map[string]*entries.Entry) error {
 	outputObject["format_version"] = 1
 	outputObject["index"] = make(map[string]interface{})
 	for identifier, entry := range entryMap {
-		entryObject := make(map[string]interface{})
-		entryObject["tooth"] = entry.ToothPath
-		entryObject["author"] = entry.Author
-		entryObject["description"] = entry.Description
-		entryObject["homepage"] = entry.Homepage
-		entryObject["license"] = entry.License
-		entryObject["name"] = entry.Name
-		entryObject["repository"] = entry.Repository
-		entryObject["tags"] = entry.Tags
-
-		outputObject["index"].(map[string]interface{})[identifier] = entryObject
+		outputObject["index"].(map[string]interface{})[identifier] = entry.Map()
 	}
 
 	// Encode output object to JSON.

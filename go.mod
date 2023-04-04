@@ -1,4 +1,4 @@
-module github.com/liteldev/reggen
+module github.com/liteldev/registrygenerator
 
 go 1.19
 
