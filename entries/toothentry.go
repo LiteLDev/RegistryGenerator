@@ -141,16 +141,14 @@ func NewToothEntryFromJSON(jsonBytes []byte) (ToothEntry, error) {
 
 func (entry ToothEntry) Map() map[string]interface{} {
 	return map[string]interface{}{
-		"type":  "tooth",
-		"tooth": entry.Tooth,
-		"information": map[string]interface{}{
-			"author":      entry.Author,
-			"description": entry.Description,
-			"homepage":    entry.Homepage,
-			"license":     entry.License,
-			"name":        entry.Name,
-			"repository":  entry.Repository,
-			"tags":        entry.Tags,
-		},
+		"type":        "tooth",
+		"tooth":       entry.Tooth,
+		"author":      entry.Author,
+		"description": entry.Description,
+		"homepage":    entry.Homepage,
+		"license":     entry.License,
+		"name":        entry.Name,
+		"repository":  entry.Repository,
+		"tags":        entry.Tags,
 	}
 }
